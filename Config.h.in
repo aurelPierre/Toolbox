@@ -1,0 +1,13 @@
+// the configured options and settings for Tutorial
+#define Toolbox_VERSION_MAJOR @Toolbox_VERSION_MAJOR@
+#define Toolbox_VERSION_MINOR @Toolbox_VERSION_MINOR@
+
+#if defined(_WIN32)
+#  if defined(EXPORTING_MYMATH)
+#    define DECLSPEC __declspec(dllexport)
+#  else
+#    define DECLSPEC __declspec(dllimport)
+#  endif
+#else // non windows
+#  define DECLSPEC
+#endif
