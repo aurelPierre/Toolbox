@@ -44,7 +44,7 @@ namespace tlbx
     {
       using type = T;
       static T _obj;
-    }
+    };
 
     using StdRegister = Register<StdOutput>;
   }
