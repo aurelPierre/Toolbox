@@ -13,6 +13,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
+# Code Coverage Configuration
+add_library(coverage_config INTERFACE)
+
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(coverage_config INTERFACE
+    -O0        # no optimization
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(coverage_config INTERFACE --coverage)
+  else()
+    target_link_libraries(coverage_config INTERFACE --coverage)
+  endif()
+endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+
 configure_file(Config.h.in ../include/Config.h)
 
 add_library(Toolbox)
@@ -20,6 +38,8 @@ add_library(Toolbox)
 file(GLOB_RECURSE SOURCES src/*)
 target_sources(Toolbox PUBLIC ${SOURCES})
 target_include_directories(Toolbox PUBLIC include/)
+
+target_link_libraries(Toolbox PUBLIC coverage_config)
 
 install(TARGETS Toolbox DESTINATION lib)
 
