@@ -16,14 +16,15 @@ namespace tlbx
   enum ESeverity
   {
     INFO,
+		DEBUG,
+		VERBOSE,
     WARNING,
-    ERROR,
-    CRITICAL
+    ERROR
   };
 
   namespace svrt
   {
-    constexpr const char* _names[] = { "INFO", "WARNING", "ERROR", "CRITICAL" };
+    constexpr const char* _names[] = { "INFO", "DEBUG", "VERBOSE", "WARNING", "ERROR" };
     constexpr const char* to_string(const ESeverity severity) {  return _names[severity]; }
   };
 
