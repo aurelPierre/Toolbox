@@ -11,3 +11,6 @@
 #else // non windows
 #  define DECLSPEC
 #endif
+
+#cmakedefine BUILD_STANDARD_CHANNEL
+#cmakedefine BUILD_FILE_CHANNEL

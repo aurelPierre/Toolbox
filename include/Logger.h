@@ -3,6 +3,10 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
+
+#include "Config.h"
 
 /*
 * TODO:
@@ -25,35 +29,57 @@ namespace tlbx
   namespace svrt
   {
     constexpr const char* _names[] = { "INFO", "DEBUG", "VERBOSE", "WARNING", "ERROR" };
-    constexpr const char* to_string(const ESeverity severity) {  return _names[severity]; }
-  };
+  	// blue, green, cyan, yellow and red (everything in bold)
+		constexpr const char* _colors[] = { "\033[1;34m", "\033[1;32m", "\033[1;36m", "\033[1;33m", "\033[1;31m" };
+	};
+
+	struct Payload
+	{
+		const ESeverity _severity;
+		const std::string _msg;
+		std::time_t _timestamp;
+
+		Payload(const ESeverity severity, const std::string& msg);
+		~Payload() = default;
+	};
+
+	/*struct Channel
+	{};
+
+	template<class T>
+	Channel& operator<<(Channel& os, const T& obj){ os.print(obj); return os; }
+	*/
+
+#ifdef BUILD_STANDARD_CHANNEL 
+	struct StdChannel
+	{};
+
+	template<class T>
+	StdChannel& operator<<(StdChannel& os, const T& obj)
+ 	{
+		std::cout << obj;	
+		return os; 
+	}
+
+#endif
+
+// TODO wip structure
+#ifndef BUILD_FILE_CHANNEL 
+	struct FileChannel
+	{};
+
+	template<class T>
+	FileChannel& operator<<(FileChannel& os, const T& obj) { return os; }
+#endif
 
   namespace details
   {
-    struct NullOutput
-    {
-      void out(const std::string&) {};
-    };
-
-    struct StdOutput
-    {
-      void out(const std::string& msg) { std::cout << msg; }
-    };
-
-    template<class T>
-    struct Register
-    {
-      using type = T;
-      static T _obj;
-    };
-
-    using StdRegister = Register<StdOutput>;
   }
 
-  void log(const ESeverity severity, const std::string& msg);
+  void log(const Payload& payload);
 }
 
-#define LOG(sev, msg) tlbx::log(sev , msg);
+#define LOG(sev, msg) tlbx::log({sev , msg});
 #define ASSERT(predicate, msg) if(!predicate) { LOG(tlbx::ERROR, std::string(__FILE__) + ":" + std::to_string(__LINE__) + ":\n\t" + msg) std::exit(-1); }
 
 #endif /* end of include guard: LOGGER_H */

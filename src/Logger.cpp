@@ -1,15 +1,34 @@
 #include "Logger.h"
 
 #include <iostream>
-#include <chrono>
-#include <iomanip>
 
 namespace tlbx
 {
-  void log(const ESeverity severity, const std::string& msg)
-  {
+	Payload::Payload(const ESeverity severity, const std::string& msg)
+		: _severity { severity }, _msg { msg }
+	{
     const std::chrono::system_clock::time_point timestamp = std::chrono::system_clock::now();
-    const std::time_t time = std::chrono::system_clock::to_time_t(timestamp);
-    std::cout << std::put_time(std::localtime(&time), "%T") << " | [" << svrt::to_string(severity) << "] | " << msg << '\n';
+    _timestamp = std::chrono::system_clock::to_time_t(timestamp);
+	}
+
+	template<>
+	StdChannel& operator<<(StdChannel& os, const Payload& obj)
+	{
+		std::clog << std::put_time(std::localtime(&obj._timestamp), "%T") << " | " << svrt::_colors[obj._severity] << '[' 
+			<< svrt::_names[obj._severity] << "]\033[0m | " << obj._msg << '\n'; 
+		return os;
+	}
+
+  void log(const Payload& payload)
+  {
+#ifdef BUILD_STANDARD_CHANNEL
+		StdChannel s;
+		s << payload;
+#endif
+
+#ifdef BUILD_FILE_CHANNEL
+		FileChannel f;
+	  f << std::put_time(std::localtime(&time), "%T") << " | " << '[' << svrt::_names[severity] << "] | " << msg << '\n'; 
+#endif
   }
 }

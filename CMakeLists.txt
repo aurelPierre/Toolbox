@@ -15,6 +15,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
+# Logger options
+option(BUILD_STANDARD_CHANNEL "Build the standard channel used in the logger" ON)
+option(BUILD_FILE_CHANNEL "Build the file channel used in the logger" OFF)
+
 # Code Coverage Configuration
 add_library(coverage_config INTERFACE)
 

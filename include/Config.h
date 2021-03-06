@@ -11,3 +11,6 @@
 #else // non windows
 #  define DECLSPEC
 #endif
+
+#define BUILD_STANDARD_CHANNEL
+/* #undef BUILD_FILE_CHANNEL */
