@@ -4,13 +4,11 @@
 #include <string>
 #include <iostream>
 #include <chrono>
-#include <iomanip>
 
 #include "Config.h"
 
 /*
 * TODO:
-* -> Channel
 * -> Different ostream
 * -> Logging thread
 */
@@ -36,19 +34,12 @@ namespace tlbx
 	struct Payload
 	{
 		const ESeverity _severity;
-		const std::string _msg;
-		std::time_t _timestamp;
+		const char* 		_msg;
+		std::time_t 		_timestamp;
 
 		Payload(const ESeverity severity, const std::string& msg);
 		~Payload() = default;
 	};
-
-	/*struct Channel
-	{};
-
-	template<class T>
-	Channel& operator<<(Channel& os, const T& obj){ os.print(obj); return os; }
-	*/
 
 #ifdef BUILD_STANDARD_CHANNEL 
 	struct StdChannel
@@ -60,7 +51,6 @@ namespace tlbx
 		std::cout << obj;	
 		return os; 
 	}
-
 #endif
 
 // TODO wip structure
@@ -79,7 +69,7 @@ namespace tlbx
   void log(const Payload& payload);
 }
 
-#define LOG(sev, msg) tlbx::log({sev , msg});
+#define LOG(sev, msg) tlbx::log({ sev, msg });
 #define ASSERT(predicate, msg) if(!predicate) { LOG(tlbx::ERROR, std::string(__FILE__) + ":" + std::to_string(__LINE__) + ":\n\t" + msg) std::exit(-1); }
 
 #endif /* end of include guard: LOGGER_H */

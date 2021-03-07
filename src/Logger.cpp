@@ -1,11 +1,12 @@
 #include "Logger.h"
 
 #include <iostream>
+#include <iomanip>
 
 namespace tlbx
 {
 	Payload::Payload(const ESeverity severity, const std::string& msg)
-		: _severity { severity }, _msg { msg }
+		: _severity { severity }, _msg { msg.c_str() }
 	{
     const std::chrono::system_clock::time_point timestamp = std::chrono::system_clock::now();
     _timestamp = std::chrono::system_clock::to_time_t(timestamp);
