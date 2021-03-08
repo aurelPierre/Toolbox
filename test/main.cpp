@@ -10,12 +10,6 @@ int main(int argc, char** argv)
   static_assert(sizeof(tlbx::svrt::_names) == sizeof(char*) * 5);
   static_assert(sizeof(tlbx::svrt::_colors) == sizeof(char*) * 5);
 
-	tlbx::StdChannel s{};
-	tlbx::FileChannel f{};
-
-	s << "s is being used\n";
-	f << "f is being used\n";
-
   LOG(tlbx::INFO, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
   LOG(tlbx::DEBUG, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
   LOG(tlbx::VERBOSE, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))

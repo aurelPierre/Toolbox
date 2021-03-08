@@ -1,9 +1,11 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <functional>
 #include <string>
 #include <iostream>
 #include <chrono>
+#include <fstream>
 
 #include "Config.h"
 
@@ -43,28 +45,36 @@ namespace tlbx
 
 #ifdef BUILD_STANDARD_CHANNEL 
 	struct StdChannel
-	{};
+	{
+		static StdChannel out;
+	};
 
 	template<class T>
 	StdChannel& operator<<(StdChannel& os, const T& obj)
  	{
-		std::cout << obj;	
+		std::clog << obj;	
 		return os; 
 	}
 #endif
 
-// TODO wip structure
-#ifndef BUILD_FILE_CHANNEL 
+#ifdef BUILD_FILE_CHANNEL 
 	struct FileChannel
-	{};
+	{
+		static FileChannel out;
+
+		std::ofstream _file;
+
+		FileChannel();
+		~FileChannel() = default;
+	};
 
 	template<class T>
-	FileChannel& operator<<(FileChannel& os, const T& obj) { return os; }
+	FileChannel& operator<<(FileChannel& os, const T& obj)
+ 	{
+		os._file << obj;
+	 	return os;
+ 	}
 #endif
-
-  namespace details
-  {
-  }
 
   void log(const Payload& payload);
 }

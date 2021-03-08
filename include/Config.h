@@ -13,4 +13,4 @@
 #endif
 
 #define BUILD_STANDARD_CHANNEL
-/* #undef BUILD_FILE_CHANNEL */
+#define BUILD_FILE_CHANNEL
