@@ -13,12 +13,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-
-# Logger options
-option(BUILD_STANDARD_CHANNEL "Build the standard channel used in the logger" ON)
-option(BUILD_FILE_CHANNEL "Build the file channel used in the logger" OFF)
-
 # Code Coverage Configuration
 add_library(coverage_config INTERFACE)
 
@@ -39,7 +33,7 @@ endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
 configure_file(Config.h.in ../include/Config.h)
 
-add_library(Toolbox)
+add_library(Toolbox STATIC)
 
 file(GLOB_RECURSE SOURCES src/*)
 target_sources(Toolbox PUBLIC ${SOURCES})

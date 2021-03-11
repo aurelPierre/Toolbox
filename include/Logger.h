@@ -1,11 +1,12 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <functional>
 #include <string>
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <vector>
+#include <memory>
 
 #include "Config.h"
 
@@ -43,38 +44,49 @@ namespace tlbx
 		~Payload() = default;
 	};
 
-#ifdef BUILD_STANDARD_CHANNEL 
-	struct StdChannel
+	struct Channel
 	{
-		static StdChannel out;
+		using container_type = std::vector<std::unique_ptr<Channel>>;
+		static container_type _channels;
+
+		template<class T, class... Args>
+		static const container_type::const_iterator Add(Args&&... args)
+		{
+			_channels.emplace_back(new T(std::forward<Args&&>(args)...));
+			return _channels.cend() - 1;
+		}
+
+		static void Remove(const container_type::const_iterator& it)
+		{
+			_channels.erase(it);
+		}
+
+		Channel() = default;
+		virtual ~Channel() = default;
+
+		Channel(const Channel&) = delete;
+		Channel& operator=(const Channel&) = delete;
+
+		Channel(Channel&&) = delete;
+		Channel& operator=(Channel&&) = delete;
+	
+		virtual void print(const Payload& payload) = 0;
 	};
 
-	template<class T>
-	StdChannel& operator<<(StdChannel& os, const T& obj)
- 	{
-		std::clog << obj;	
-		return os; 
-	}
-#endif
-
-#ifdef BUILD_FILE_CHANNEL 
-	struct FileChannel
+	struct StdChannel : public Channel
 	{
-		static FileChannel out;
+		virtual void print(const Payload& payload) override;
+	};
 
+	struct FileChannel : public Channel
+	{
 		std::ofstream _file;
 
 		FileChannel();
 		~FileChannel() = default;
-	};
 
-	template<class T>
-	FileChannel& operator<<(FileChannel& os, const T& obj)
- 	{
-		os._file << obj;
-	 	return os;
- 	}
-#endif
+		virtual void print(const Payload& payload) override;
+	};
 
   void log(const Payload& payload);
 }

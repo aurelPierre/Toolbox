@@ -1,8 +1,11 @@
 #include "Logger.h"
 
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
+#include <vector>
 
 namespace tlbx
 {
@@ -13,20 +16,13 @@ namespace tlbx
     _timestamp = std::chrono::system_clock::to_time_t(timestamp);
 	}
 
-#ifdef BUILD_STANDARD_CHANNEL
-	StdChannel StdChannel::out;
+	Channel::container_type Channel::_channels;
 
-	template<>
-	StdChannel& operator<<(StdChannel& os, const Payload& obj)
+	void StdChannel::print(const Payload& payload)
 	{
-		std::clog << std::put_time(std::localtime(&obj._timestamp), "%T") << " | " << svrt::_colors[obj._severity] << '[' 
-			<< svrt::_names[obj._severity] << "]\033[0m | " << obj._msg << '\n'; 
-		return os;
+		std::clog << std::put_time(std::localtime(&payload._timestamp), "%T") << " | " << svrt::_colors[payload._severity] << '[' 
+			<< svrt::_names[payload._severity] << "]\033[0m | " << payload._msg << '\n';
 	}
-#endif
-
-#ifdef BUILD_FILE_CHANNEL
-	FileChannel FileChannel::out;
 
 	FileChannel::FileChannel()
 		: _file { "log", std::ios::trunc | std::ios::out }
@@ -34,23 +30,15 @@ namespace tlbx
 		ASSERT(_file.is_open(), "file log could not be opened")
 	}
 
-	template<>
-	FileChannel& operator<<(FileChannel& os, const Payload& obj)
+	void FileChannel::print(const Payload& payload)
 	{
-		os._file << std::put_time(std::localtime(&obj._timestamp), "%T") << " | [" << svrt::_names[obj._severity] << "] | "
-		 	<< obj._msg << '\n'; 
-		return os;
+		_file << std::put_time(std::localtime(&payload._timestamp), "%T") << " | [" << svrt::_names[payload._severity] << "] | "
+		 	<< payload._msg << '\n'; 
 	}
-#endif
 
   void log(const Payload& payload)
   {
-#ifdef BUILD_STANDARD_CHANNEL
-		StdChannel::out << payload;
-#endif
-
-#ifdef BUILD_FILE_CHANNEL
-		FileChannel::out << payload;
-#endif
+		for(size_t i = 0; i < Channel::_channels.size(); ++i)
+			Channel::_channels[i]->print(payload);
   }
 }
