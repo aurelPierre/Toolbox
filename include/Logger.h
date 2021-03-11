@@ -12,7 +12,6 @@
 
 /*
 * TODO:
-* -> Different ostream
 * -> Logging thread
 */
 

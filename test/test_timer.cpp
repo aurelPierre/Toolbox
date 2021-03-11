@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 	timer.stop();
 
 	tlbx::Channel::Add<tlbx::StdChannel>();
-	LOG(tlbx::INFO, std::to_string(timer.duration<tlbx::milliseconds>()));	
+	LOG(tlbx::INFO, std::to_string(timer.duration<tlbx::milliseconds::period>()));	
 
 	return 0;
 }

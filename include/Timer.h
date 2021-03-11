@@ -2,6 +2,7 @@
 #define TIMER_H
 
 #include <chrono>
+#include <ratio>
 
 namespace tlbx
 {
@@ -29,7 +30,7 @@ namespace tlbx
 		template<class T>
 		auto duration()
 		{
-			return std::chrono::duration_cast<T>(_end - _start).count();
+			return std::chrono::duration<float, T>(_end - _start).count();
 		}
 	};
 }
