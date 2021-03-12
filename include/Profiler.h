@@ -5,7 +5,7 @@
 #include <string>
 #include <limits>
 
-#include "Timer.h"
+#include "Stopwatch.h"
 
 namespace tlbx
 {
@@ -24,7 +24,7 @@ namespace tlbx
 
 	private:
 		std::string _name;
-		Timer 			_timer;
+		Stopwatch 	_stopwatch;
 
 	public:
 		Profiler(const std::string& name);

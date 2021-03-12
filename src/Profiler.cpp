@@ -10,8 +10,8 @@ namespace tlbx
 
 	Profiler::~Profiler()
 	{
-		_timer.stop();
-		auto time = _timer.duration<milliseconds::period>();
+		_stopwatch.stop();
+		auto time = _stopwatch.duration<milliseconds::period>();
 
 		if(_profile[_name]._min > time)
 			_profile[_name]._min = time;

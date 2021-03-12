@@ -1,4 +1,4 @@
-#include "Timer.h"
+#include "Stopwatch.h"
 #include "Logger.h"
 
 #include <chrono>
@@ -6,14 +6,14 @@
 
 int main(int argc, char** argv)
 {
-	tlbx::Timer timer;
+	tlbx::Stopwatch stopwatch;
 
 	std::this_thread::sleep_for(tlbx::milliseconds(200));
 
-	timer.stop();
+	stopwatch.stop();
 
 	tlbx::Channel::Add<tlbx::StdChannel>();
-	LOG(tlbx::INFO, std::to_string(timer.duration<tlbx::milliseconds::period>()));	
+	LOG(tlbx::INFO, std::to_string(stopwatch.duration<tlbx::milliseconds::period>()));	
 
 	return 0;
 }
