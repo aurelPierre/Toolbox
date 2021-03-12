@@ -9,6 +9,9 @@ target_link_libraries(test_stopwatch Toolbox)
 add_executable(test_profiler test_profiler.cpp)
 target_link_libraries(test_profiler Toolbox)
 
+add_executable(test_timer test_timer.cpp)
+target_link_libraries(test_timer Toolbox)
+
 # Make sure the exec runs without any issue first
 add_test(NAME Runs_logger COMMAND test_logger)
 
@@ -19,3 +22,4 @@ add_test(NAME Runs_stopwatch COMMAND test_stopwatch)
 
 add_test(NAME Runs_profiler COMMAND test_profiler)
 
+add_test(NAME Runs_timer COMMAND test_timer)

@@ -2,19 +2,23 @@
 
 namespace tlbx
 {
-	Timer::Timer()
+	Timer::Timer(float time, const std::function<void()>& func, bool autoStart)
+		: _time { time }, _func { func }
 	{
-		start();
+		if(autoStart)
+			start();
 	}
 
 	void Timer::start()
 	{
-		_start = clock_type::now();
-		_end = _start;
+		_stopwatch.start();
 	}
 
-	void Timer::stop()
+	void Timer::step()
 	{
-		_end = clock_type::now();
+		_stopwatch.stop();
+		float time = _stopwatch.duration<milliseconds::period>();
+		if(time > _time)
+			_func();
 	}
 }
