@@ -16,10 +16,10 @@ int main(int argc, char** argv)
   LOG(tlbx::DEBUG, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
   LOG(tlbx::VERBOSE, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
   LOG(tlbx::WARNING, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
-  
-	tlbx::Channel::Remove(it);
-	
-	LOG(tlbx::ERROR, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
 
+	tlbx::Channel::Remove(it);
+
+	LOG(tlbx::ERROR, "Toolbox version " + std::to_string(Toolbox_VERSION_MAJOR) + "." + std::to_string(Toolbox_VERSION_MINOR))
+	
 	return 0;
 }

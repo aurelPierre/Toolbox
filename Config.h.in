@@ -12,5 +12,8 @@
 #  define DECLSPEC
 #endif
 
-#cmakedefine BUILD_STANDARD_CHANNEL
-#cmakedefine BUILD_FILE_CHANNEL
+#ifdef DISABLE_RELEASE_LOGS
+	#ifndef NDEBUG
+		#define DISABLE_LOGS	
+	#endif
+#endif

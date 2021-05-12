@@ -33,13 +33,20 @@ endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
 configure_file(Config.h.in ../include/Config.h)
 
+option(DISABLE_RELEASE_LOGS "Disable logs when building in release" OFF)
+
 add_library(Toolbox STATIC)
+
+target_compile_options(Toolbox INTERFACE -O3 -Wall)
 
 file(GLOB_RECURSE SOURCES src/*)
 target_sources(Toolbox PUBLIC ${SOURCES})
 target_include_directories(Toolbox PUBLIC include/)
 
 target_link_libraries(Toolbox PUBLIC coverage_config)
+
+find_package(Threads REQUIRED)
+target_link_libraries(Toolbox PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS Toolbox DESTINATION lib)
 

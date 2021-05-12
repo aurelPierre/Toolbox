@@ -36,6 +36,8 @@ namespace tlbx
 		 	<< payload._msg << '\n'; 
 	}
 
+	Logger Logger::_instance;
+
   void log(const Payload& payload)
   {
 		for(size_t i = 0; i < Channel::_channels.size(); ++i)

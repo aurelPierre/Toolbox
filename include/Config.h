@@ -12,5 +12,8 @@
 #  define DECLSPEC
 #endif
 
-#define BUILD_STANDARD_CHANNEL
-#define BUILD_FILE_CHANNEL
+#ifdef DISABLE_RELEASE_LOGS
+	#ifndef NDEBUG
+		#define DISABLE_LOGS	
+	#endif
+#endif

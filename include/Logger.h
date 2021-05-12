@@ -1,19 +1,23 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <thread>
 #include <vector>
 #include <memory>
 
-#include "Config.h"
+#include <threads.h>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 
-/*
-* TODO:
-* -> Logging thread
-*/
+#include <queue>
+
+#include "Config.h"
 
 namespace tlbx
 {
@@ -35,9 +39,9 @@ namespace tlbx
 
 	struct Payload
 	{
-		const ESeverity _severity;
-		const char* 		_msg;
-		std::time_t 		_timestamp;
+		const ESeverity 	_severity;
+		const std::string _msg;
+		std::time_t 			_timestamp;
 
 		Payload(const ESeverity severity, const std::string& msg);
 		~Payload() = default;
@@ -87,10 +91,74 @@ namespace tlbx
 		virtual void print(const Payload& payload) override;
 	};
 
+	class Logger
+	{
+		std::thread 						_thread;
+		std::mutex 							_mutex;
+		std::condition_variable _conditionVariable;
+		std::atomic<bool>				_isRunning;
+
+		std::queue<Payload> _logs;
+
+	public:
+		static Logger _instance;
+
+	private:
+		Logger()
+		{
+			_isRunning = true;
+			_thread = std::thread(&Logger::loggingLoop, this);
+		}
+
+		~Logger()
+		{
+			_isRunning = false;
+			_conditionVariable.notify_one();
+
+			if(_thread.joinable())
+				_thread.join();
+		}
+
+		void loggingLoop()
+		{
+			while(_isRunning)
+			{
+				{
+					std::unique_lock<std::mutex> lock(_mutex);
+					_conditionVariable.wait(lock, [&]{ return !_logs.empty() || !_isRunning; });
+
+					while(!_logs.empty())
+					{
+						Payload log = _logs.front();
+						_logs.pop();
+
+						for(size_t i = 0; i < Channel::_channels.size(); ++i)
+							Channel::_channels[i]->print(log);
+					}
+				}
+			}
+		}
+
+	public:
+		void operator()(const Payload& payload)
+		{
+			{
+				std::unique_lock<std::mutex> lock(_mutex);
+				_logs.emplace(payload);
+			}
+			_conditionVariable.notify_one();
+		}
+	};
+
   void log(const Payload& payload);
 }
 
-#define LOG(sev, msg) tlbx::log({ sev, msg });
+#ifdef DISABLE_LOGS
+	#define LOG(sev, msg) ;;
+#else	
+	#define LOG(sev, msg) tlbx::Logger::_instance({ sev, msg });
+#endif
+
 #define ASSERT(predicate, msg) if(!predicate) { LOG(tlbx::ERROR, std::string(__FILE__) + ":" + std::to_string(__LINE__) + ":\n\t" + msg) std::exit(-1); }
 
 #endif /* end of include guard: LOGGER_H */
