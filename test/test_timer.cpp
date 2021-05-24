@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-	tlbx::Channel::Add<tlbx::StdChannel>();
+	tlbx::Logger::Add<tlbx::StdChannel>();
 
 	tlbx::Timer t(100, []{ LOG(tlbx::INFO, "executed timer function") }, true);
 

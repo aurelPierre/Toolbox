@@ -39,31 +39,18 @@ namespace tlbx
 
 	struct Payload
 	{
-		const ESeverity 	_severity;
-		const std::string _msg;
-		std::time_t 			_timestamp;
+		ESeverity 			_severity;
+		std::string 		_msg;
+		std::time_t 		_timestamp;
+		std::thread::id _threadId;
 
+		Payload() = default;
 		Payload(const ESeverity severity, const std::string& msg);
 		~Payload() = default;
 	};
 
 	struct Channel
 	{
-		using container_type = std::vector<std::unique_ptr<Channel>>;
-		static container_type _channels;
-
-		template<class T, class... Args>
-		static const container_type::const_iterator Add(Args&&... args)
-		{
-			_channels.emplace_back(new T(std::forward<Args&&>(args)...));
-			return _channels.cend() - 1;
-		}
-
-		static void Remove(const container_type::const_iterator& it)
-		{
-			_channels.erase(it);
-		}
-
 		Channel() = default;
 		virtual ~Channel() = default;
 
@@ -93,70 +80,56 @@ namespace tlbx
 
 	class Logger
 	{
+		using container_type = std::vector<std::unique_ptr<Channel>>;
+
+	public:
+		static Logger 					_instance;
+
+	private:
 		std::thread 						_thread;
 		std::mutex 							_mutex;
 		std::condition_variable _conditionVariable;
 		std::atomic<bool>				_isRunning;
 
-		std::queue<Payload> _logs;
+		std::queue<Payload> 		_logs;
+		container_type 					_channels;
 
 	public:
-		static Logger _instance;
+		template<class T, class... Args>
+		static const container_type::const_iterator Add(Args&&... args)
+		{
+			_instance._channels.emplace_back(new T(std::forward<Args&&>(args)...));
+			return _instance._channels.cend() - 1;
+		}
+
+		static void Remove(const container_type::const_iterator& it)
+		{
+			_instance._channels.erase(it);
+		}
 
 	private:
-		Logger()
-		{
-			_isRunning = true;
-			_thread = std::thread(&Logger::loggingLoop, this);
-		}
+		Logger();
+		~Logger();
 
-		~Logger()
-		{
-			_isRunning = false;
-			_conditionVariable.notify_one();
-
-			if(_thread.joinable())
-				_thread.join();
-		}
-
-		void loggingLoop()
-		{
-			while(_isRunning)
-			{
-				{
-					std::unique_lock<std::mutex> lock(_mutex);
-					_conditionVariable.wait(lock, [&]{ return !_logs.empty() || !_isRunning; });
-
-					while(!_logs.empty())
-					{
-						Payload log = _logs.front();
-						_logs.pop();
-
-						for(size_t i = 0; i < Channel::_channels.size(); ++i)
-							Channel::_channels[i]->print(log);
-					}
-				}
-			}
-		}
+		void loggingLoop();
 
 	public:
-		void operator()(const Payload& payload)
+		template<class ... Args>
+		void operator()(Args&&... args)
 		{
 			{
 				std::unique_lock<std::mutex> lock(_mutex);
-				_logs.emplace(payload);
+				_logs.emplace(std::forward<Args>(args)...);
 			}
 			_conditionVariable.notify_one();
 		}
 	};
-
-  void log(const Payload& payload);
 }
 
 #ifdef DISABLE_LOGS
 	#define LOG(sev, msg) ;;
 #else	
-	#define LOG(sev, msg) tlbx::Logger::_instance({ sev, msg });
+	#define LOG(sev, msg) tlbx::Logger::_instance(sev, msg);
 #endif
 
 #define ASSERT(predicate, msg) if(!predicate) { LOG(tlbx::ERROR, std::string(__FILE__) + ":" + std::to_string(__LINE__) + ":\n\t" + msg) std::exit(-1); }

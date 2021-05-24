@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 
 	stopwatch.stop();
 
-	tlbx::Channel::Add<tlbx::StdChannel>();
+	tlbx::Logger::Add<tlbx::StdChannel>();
 	LOG(tlbx::INFO, std::to_string(stopwatch.duration<tlbx::milliseconds::period>()));	
 
 	return 0;

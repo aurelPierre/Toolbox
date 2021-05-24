@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 		std::this_thread::sleep_for(tlbx::milliseconds(distrib(gen)));
 	}
 
-	tlbx::Channel::Add<tlbx::StdChannel>();
+	tlbx::Logger::Add<tlbx::StdChannel>();
 	LOG(tlbx::INFO, "Count: " + std::to_string(tlbx::Profiler::_profile["demo"]._count));
 	LOG(tlbx::INFO, "Min: " + std::to_string(tlbx::Profiler::_profile["demo"]._min));
 	LOG(tlbx::INFO, "Avg: " + std::to_string(tlbx::Profiler::_profile["demo"]._avg));
