@@ -2,6 +2,9 @@ name: CodeQl
 
 on: [push]
 
+env:
+  BUILD_TYPE: Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
