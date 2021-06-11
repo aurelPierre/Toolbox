@@ -30,9 +30,8 @@ int main(int argc, char** argv)
 	tlbx::Stopwatch chrono;
 	for(size_t i = 0; i < log_size; ++i)
 	{ 
-		d[i].swap(std::thread([i] {
-			LOG(tlbx::INFO, "Log nb: " + std::to_string(i)) })
-		);
+		d[i] = std::thread([i] {
+			LOG(tlbx::INFO, "Log nb: " + std::to_string(i)) });
 	}
 
 	for (size_t i = 0; i < log_size; ++i)
