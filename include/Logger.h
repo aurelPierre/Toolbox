@@ -10,7 +10,7 @@
 #include <vector>
 #include <memory>
 
-#include <threads.h>
+#include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
@@ -21,27 +21,27 @@
 
 namespace tlbx
 {
-  enum ESeverity
-  {
-    INFO,
+	enum ESeverity
+	{
+		INFO,
 		DEBUG,
 		VERBOSE,
-    WARNING,
-    ERROR
-  };
+		WARNING,
+		ERROR
+	};
 
-  namespace svrt
-  {
-    constexpr const char* _names[] = { "INFO", "DEBUG", "VERBOSE", "WARNING", "ERROR" };
-  	// blue, green, cyan, yellow and red (everything in bold)
+	namespace svrt
+	{
+		constexpr const char* _names[] = { "INFO", "DEBUG", "VERBOSE", "WARNING", "ERROR" };
+  		// blue, green, cyan, yellow and red (everything in bold)
 		constexpr const char* _colors[] = { "\033[1;34m", "\033[1;32m", "\033[1;36m", "\033[1;33m", "\033[1;31m" };
 	};
 
 	struct Payload
 	{
-		ESeverity 			_severity;
-		std::string 		_msg;
-		std::time_t 		_timestamp;
+		ESeverity 		_severity;
+		std::string 	_msg;
+		time_t 			_timestamp;
 		std::thread::id _threadId;
 
 		Payload() = default;
@@ -83,16 +83,16 @@ namespace tlbx
 		using container_type = std::vector<std::unique_ptr<Channel>>;
 
 	public:
-		static Logger 					_instance;
+		static Logger 				_instance;
 
 	private:
-		std::thread 						_thread;
-		std::mutex 							_mutex;
-		std::condition_variable _conditionVariable;
-		std::atomic<bool>				_isRunning;
+		std::thread 				_thread;
+		std::mutex 					_mutex;
+		std::condition_variable		_conditionVariable;
+		std::atomic<bool>			_isRunning;
 
 		std::queue<Payload> 		_logs;
-		container_type 					_channels;
+		container_type 				_channels;
 
 	public:
 		template<class T, class... Args>

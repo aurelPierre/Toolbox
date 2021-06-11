@@ -8,9 +8,9 @@ namespace tlbx
 	using nanoseconds 	= std::chrono::nanoseconds;
 	using microseconds 	= std::chrono::microseconds;
 	using milliseconds 	= std::chrono::milliseconds;
-	using seconds 			= std::chrono::seconds;
-	using minutes 			= std::chrono::minutes;
-	using hours 				= std::chrono::hours;
+	using seconds 		= std::chrono::seconds;
+	using minutes 		= std::chrono::minutes;
+	using hours 		= std::chrono::hours;
 
 	class Stopwatch
 	{
@@ -27,7 +27,7 @@ namespace tlbx
 		void stop();
 
 		template<class T>
-		auto duration()
+		float duration()
 		{
 			return std::chrono::duration<float, T>(_end - _start).count();
 		}
